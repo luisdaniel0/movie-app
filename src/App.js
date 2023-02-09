@@ -1,5 +1,5 @@
 import './App.css';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import SearchIcon from './search.svg'
 import MovieCard from './components/MovieCard'
@@ -17,11 +17,14 @@ const movie1 = {
 
 function App() {
 
+  const [movies, setMovies] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+
   const searchMovies = async (title) => {
     const response = await axios.get(`${API_URL}&s=${title}`)
-    console.log(response.data.Search)
+    setMovies(response.data.Search)
 
-  }
+  };
 
   useEffect(() => {
     searchMovies('spiderman')
@@ -34,19 +37,27 @@ function App() {
       <div className="search">
         <input
           placeholder="Search for movies!"
-          value="Superman"
-          onChange={() => { }}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
         <img
           src={SearchIcon}
           alt="search"
-          onClick={() => { }}
+          onClick={() => searchMovies(searchTerm)}
         />
       </div>
 
-      <div className="container">
-        <MovieCard movie1={movie1} />
-      </div>
+      {movies?.length > 0 ? (
+        <div className="container">
+          {movies.map((movie) => (
+            <MovieCard movie={movie} />
+          ))}
+        </div>
+      ) : (
+        <div className="empty">
+          <h2>No movies found</h2>
+        </div>
+      )}
     </div>
   );
 }
